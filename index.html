@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>国家育儿补贴计算器</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- QR码生成库 -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script> -->
+  </head>
+  <body>
+    <!-- 主计算器区域 -->
+    <section class="main-calculator">
+      <div class="container">
+        <div class="header">
+          <h1>🍼 国家育儿补贴计算器</h1>
+          <p class="subtitle">
+            2025年1月1日起实施 • 每孩每年3600元 • 补贴至3周岁
+          </p>
+        </div>
+
+        <div class="calculator-wrapper">
+          <div id="calculator-card" class="calculator-card">
+            <div class="form-section">
+              <div class="form-group">
+                <label for="birth-date">孩子出生日期</label>
+                <input type="date" id="birth-date" max="2025-12-31" />
+              </div>
+              <button class="btn-calculate" onclick="calculateSubsidy()">
+                计算补贴
+              </button>
+            </div>
+          </div>
+
+          <div id="result-card" class="result-card hidden">
+            <div id="result-section" class="result-section">
+              <div class="celebration-message">
+                <div id="celebration-text" class="celebration-text"></div>
+              </div>
+              <div class="result-header">
+                <h3>补贴计算结果</h3>
+              </div>
+              <div class="result-main">
+                <div class="result-item">
+                  <span class="label">每月补贴</span>
+                  <span class="value">300元</span>
+                </div>
+                <div class="result-item">
+                  <span class="label">每年补贴</span>
+                  <span class="value">3,600元</span>
+                </div>
+                <div class="result-item highlight">
+                  <span class="label">总计可领取</span>
+                  <span class="value" id="total-amount">0元</span>
+                </div>
+                <div class="result-item">
+                  <span class="label">补贴期限</span>
+                  <span class="value" id="subsidy-months">0个月</span>
+                </div>
+              </div>
+              <div class="result-details">
+                <div id="calculation-details"></div>
+              </div>
+              <div class="result-actions">
+                <!-- <button class="btn-share" onclick="generateShareImage()">
+                  📸 生成分享图
+                </button> -->
+                <button class="btn-recalculate" onclick="resetCalculator()">
+                  再算一次
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 政策说明 -->
+    <section class="policy-info">
+      <div class="container">
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-icon">📋</div>
+            <h3>申请条件</h3>
+            <ul>
+              <li>3周岁以下婴幼儿</li>
+              <li>一孩、二孩、三孩均适用</li>
+              <li>符合生育政策规定</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">💰</div>
+            <h3>补贴标准</h3>
+            <ul>
+              <li>每孩每年3600元</li>
+              <li>每月300元</li>
+              <li>免征个人所得税</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">📄</div>
+            <h3>申请材料</h3>
+            <ul>
+              <li>出生医学证明</li>
+              <li>户口簿</li>
+              <li>身份证</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section">
+      <div class="container">
+        <h2>常见问题</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <span>2025年前出生的孩子如何计算？</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>
+                2025年前出生且未满3周岁的婴幼儿，从2025年1月1日开始计算，按剩余月数发放补贴。例如：
+              </p>
+              <ul>
+                <li>2024年5月15日出生：少7个月补贴，总计可领8,700元</li>
+                <li>2024年12月出生：几乎可领满额10,800元</li>
+                <li>2022年1月出生：只能领取几个月，约900元</li>
+              </ul>
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <span>如何申请育儿补贴？</span>
+              <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>
+                向婴幼儿户籍所在地申请，可通过线上系统或线下渠道提交材料，审核通过后通过银行卡或社保卡发放。
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 隐藏的canvas用于生成分享图 -->
+    <canvas id="shareCanvas" style="display: none"></canvas>
+
+    <script src="script.js"></script>
+  </body>
+</html>
