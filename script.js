@@ -1,3 +1,18 @@
+function getMonthDifference(startDate, endDate) {
+  const years = endDate.getFullYear() - startDate.getFullYear();
+  const months = endDate.getMonth() - startDate.getMonth();
+  const days = endDate.getDate() - startDate.getDate();
+
+  let monthDiff = years * 12 + months;
+
+  // 如果当前日期的天数小于出生日期的天数，则认为未满一个月
+  if (days < 0) {
+    monthDiff--;
+  }
+
+  return monthDiff;
+}
+
 // 补贴计算功能 - 修正版
 function calculateSubsidy() {
   const birthDate = document.getElementById("birth-date").value;
@@ -6,14 +21,13 @@ function calculateSubsidy() {
     showNotification("请选择孩子的出生日期", "warning");
     return;
   }
-
   const birth = new Date(birthDate);
-  const now = new Date();
+
   const policyStart = new Date("2025-01-01");
 
-  // 检查是否符合补贴条件（3周岁以下）
-  const ageInMonths = (now - birth) / (1000 * 60 * 60 * 24 * 30.44);
-  if (ageInMonths >= 36) {
+  const ageInMonths = getMonthDifference(birth, policyStart);
+  console.log(ageInMonths);
+  if (ageInMonths > 36) {
     showNotification("很抱歉，该政策仅适用于3周岁以下的婴幼儿", "error");
     return;
   }
@@ -46,7 +60,7 @@ function calculateSubsidy() {
     );
 
     // 剩余补贴月数 = 总补贴期限36个月 - 政策前已过的月数
-    subsidyMonths = Math.max(0, 36 - monthsBeforePolicy);
+    subsidyMonths = Math.max(1, 36 - monthsBeforePolicy);
 
     totalAmount = subsidyMonths * 300;
 
@@ -572,46 +586,46 @@ function resetCalculator() {
 
 // 生成分享图功能
 function generateShareImage() {
-  const canvas = document.getElementById('shareCanvas');
-  const ctx = canvas.getContext('2d');
-  
+  const canvas = document.getElementById("shareCanvas");
+  const ctx = canvas.getContext("2d");
+
   // 设置画布尺寸 (适合社交媒体分享的尺寸)
   canvas.width = 800;
   canvas.height = 1000;
-  
+
   // 获取计算结果数据
-  const totalAmount = document.getElementById('total-amount').textContent;
-  const subsidyMonths = document.getElementById('subsidy-months').textContent;
-  const birthDate = document.getElementById('birth-date').value;
-  
+  const totalAmount = document.getElementById("total-amount").textContent;
+  const subsidyMonths = document.getElementById("subsidy-months").textContent;
+  const birthDate = document.getElementById("birth-date").value;
+
   // 创建渐变背景
   const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-  gradient.addColorStop(0, '#667eea');
-  gradient.addColorStop(0.5, '#764ba2');
-  gradient.addColorStop(1, '#f093fb');
-  
+  gradient.addColorStop(0, "#667eea");
+  gradient.addColorStop(0.5, "#764ba2");
+  gradient.addColorStop(1, "#f093fb");
+
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
+
   // 添加半透明覆盖层
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+  ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
+
   // 绘制装饰性圆圈
   drawDecorativeCircles(ctx, canvas.width, canvas.height);
-  
+
   // 绘制主要内容
   drawShareImageContent(ctx, canvas.width, canvas.height, {
     totalAmount,
     subsidyMonths,
-    birthDate
+    birthDate,
   });
-  
+
   // 下载图片
   downloadShareImage(canvas);
-  
+
   // 显示成功提示
-  showNotification('分享图生成成功！', 'success');
+  showNotification("分享图生成成功！", "success");
 }
 
 // 绘制装饰性圆圈
@@ -620,10 +634,10 @@ function drawDecorativeCircles(ctx, width, height) {
     { x: width * 0.1, y: height * 0.15, radius: 60, alpha: 0.1 },
     { x: width * 0.9, y: height * 0.25, radius: 40, alpha: 0.15 },
     { x: width * 0.2, y: height * 0.8, radius: 80, alpha: 0.08 },
-    { x: width * 0.85, y: height * 0.7, radius: 50, alpha: 0.12 }
+    { x: width * 0.85, y: height * 0.7, radius: 50, alpha: 0.12 },
   ];
-  
-  circles.forEach(circle => {
+
+  circles.forEach((circle) => {
     ctx.beginPath();
     ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
     ctx.fillStyle = `rgba(255, 255, 255, ${circle.alpha})`;
@@ -634,104 +648,115 @@ function drawDecorativeCircles(ctx, width, height) {
 // 绘制分享图主要内容
 function drawShareImageContent(ctx, width, height, data) {
   // 设置文本样式
-  ctx.textAlign = 'center';
-  ctx.fillStyle = '#ffffff';
-  
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#ffffff";
+
   // 标题
-  ctx.font = 'bold 48px Inter, sans-serif';
-  ctx.fillText('🍼 育儿补贴计算结果', width / 2, 120);
-  
+  ctx.font = "bold 48px Inter, sans-serif";
+  ctx.fillText("🍼 育儿补贴计算结果", width / 2, 120);
+
   // 副标题
-  ctx.font = '24px Inter, sans-serif';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-  ctx.fillText('2025年国家育儿补贴政策', width / 2, 170);
-  
+  ctx.font = "24px Inter, sans-serif";
+  ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+  ctx.fillText("2025年国家育儿补贴政策", width / 2, 170);
+
   // 主要结果区域背景
   const resultBoxY = 220;
   const resultBoxHeight = 400;
-  
+
   // 绘制结果背景框
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+  ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
   ctx.roundRect(60, resultBoxY, width - 120, resultBoxHeight, 20);
   ctx.fill();
-  
+
   // 绘制结果内容
-  ctx.fillStyle = '#2d3748';
-  
+  ctx.fillStyle = "#2d3748";
+
   // 出生日期
   if (data.birthDate) {
-    ctx.font = 'bold 28px Inter, sans-serif';
-    ctx.fillText('孩子出生日期', width / 2, resultBoxY + 60);
-    
-    ctx.font = '32px Inter, sans-serif';
-    ctx.fillStyle = '#667eea';
-    const formattedDate = new Date(data.birthDate).toLocaleDateString('zh-CN');
+    ctx.font = "bold 28px Inter, sans-serif";
+    ctx.fillText("孩子出生日期", width / 2, resultBoxY + 60);
+
+    ctx.font = "32px Inter, sans-serif";
+    ctx.fillStyle = "#667eea";
+    const formattedDate = new Date(data.birthDate).toLocaleDateString("zh-CN");
     ctx.fillText(formattedDate, width / 2, resultBoxY + 100);
   }
-  
+
   // 总金额 - 突出显示
-  ctx.fillStyle = '#10b981';
-  ctx.font = 'bold 36px Inter, sans-serif';
-  ctx.fillText('总计可领取', width / 2, resultBoxY + 160);
-  
-  ctx.font = 'bold 64px Inter, sans-serif';
-  ctx.fillStyle = '#059669';
+  ctx.fillStyle = "#10b981";
+  ctx.font = "bold 36px Inter, sans-serif";
+  ctx.fillText("总计可领取", width / 2, resultBoxY + 160);
+
+  ctx.font = "bold 64px Inter, sans-serif";
+  ctx.fillStyle = "#059669";
   ctx.fillText(data.totalAmount, width / 2, resultBoxY + 230);
-  
+
   // 补贴期限
-  ctx.fillStyle = '#2d3748';
-  ctx.font = 'bold 28px Inter, sans-serif';
-  ctx.fillText('补贴期限', width / 2, resultBoxY + 290);
-  
-  ctx.font = '36px Inter, sans-serif';
-  ctx.fillStyle = '#667eea';
+  ctx.fillStyle = "#2d3748";
+  ctx.font = "bold 28px Inter, sans-serif";
+  ctx.fillText("补贴期限", width / 2, resultBoxY + 290);
+
+  ctx.font = "36px Inter, sans-serif";
+  ctx.fillStyle = "#667eea";
   ctx.fillText(data.subsidyMonths, width / 2, resultBoxY + 330);
-  
+
   // 政策说明
-  ctx.fillStyle = '#4a5568';
-  ctx.font = '20px Inter, sans-serif';
-  ctx.fillText('每月300元 × 最长36个月', width / 2, resultBoxY + 370);
-  
+  ctx.fillStyle = "#4a5568";
+  ctx.font = "20px Inter, sans-serif";
+  ctx.fillText("每月300元 × 最长36个月", width / 2, resultBoxY + 370);
+
   // 底部信息
   const bottomY = height - 200;
-  
+
   // 绘制底部背景
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+  ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
   ctx.roundRect(60, bottomY, width - 120, 120, 15);
   ctx.fill();
-  
+
   // 政策信息
-  ctx.fillStyle = '#2d3748';
-  ctx.font = 'bold 24px Inter, sans-serif';
-  ctx.fillText('政策要点', width / 2, bottomY + 35);
-  
-  ctx.font = '18px Inter, sans-serif';
-  ctx.fillStyle = '#4a5568';
-  ctx.fillText('• 适用于3周岁以下婴幼儿', width / 2, bottomY + 65);
-  ctx.fillText('• 2025年1月1日起实施', width / 2, bottomY + 90);
-  
+  ctx.fillStyle = "#2d3748";
+  ctx.font = "bold 24px Inter, sans-serif";
+  ctx.fillText("政策要点", width / 2, bottomY + 35);
+
+  ctx.font = "18px Inter, sans-serif";
+  ctx.fillStyle = "#4a5568";
+  ctx.fillText("• 适用于3周岁以下婴幼儿", width / 2, bottomY + 65);
+  ctx.fillText("• 2025年1月1日起实施", width / 2, bottomY + 90);
+
   // 生成时间和二维码区域
   const qrY = height - 60;
-  ctx.font = '16px Inter, sans-serif';
-  ctx.fillStyle = '#64748b';
-  ctx.textAlign = 'left';
-  ctx.fillText(`生成时间: ${new Date().toLocaleString('zh-CN')}`, 80, qrY);
-  
+  ctx.font = "16px Inter, sans-serif";
+  ctx.fillStyle = "#64748b";
+  ctx.textAlign = "left";
+  ctx.fillText(`生成时间: ${new Date().toLocaleString("zh-CN")}`, 80, qrY);
+
   // 右下角添加小图标
-  ctx.textAlign = 'right';
-  ctx.font = '20px Inter, sans-serif';
-  ctx.fillText('💰📊', width - 80, qrY);
+  ctx.textAlign = "right";
+  ctx.font = "20px Inter, sans-serif";
+  ctx.fillText("💰📊", width - 80, qrY);
 }
 
 // Canvas roundRect polyfill (兼容性处理)
 if (!CanvasRenderingContext2D.prototype.roundRect) {
-  CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+  CanvasRenderingContext2D.prototype.roundRect = function (
+    x,
+    y,
+    width,
+    height,
+    radius
+  ) {
     this.beginPath();
     this.moveTo(x + radius, y);
     this.lineTo(x + width - radius, y);
     this.quadraticCurveTo(x + width, y, x + width, y + radius);
     this.lineTo(x + width, y + height - radius);
-    this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    this.quadraticCurveTo(
+      x + width,
+      y + height,
+      x + width - radius,
+      y + height
+    );
     this.lineTo(x + radius, y + height);
     this.quadraticCurveTo(x, y + height, x, y + height - radius);
     this.lineTo(x, y + radius);
@@ -744,25 +769,28 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 function downloadShareImage(canvas) {
   try {
     // 创建下载链接
-    const link = document.createElement('a');
-    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+    const link = document.createElement("a");
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, "-");
     link.download = `育儿补贴计算结果_${timestamp}.png`;
-    
+
     // 转换为blob并创建URL
-    canvas.toBlob(function(blob) {
-      const url = URL.createObjectURL(blob);
-      link.href = url;
-      
-      // 触发下载
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // 清理URL
-      setTimeout(() => URL.revokeObjectURL(url), 100);
-    }, 'image/png', 0.95);
-    
+    canvas.toBlob(
+      function (blob) {
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+
+        // 触发下载
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // 清理URL
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+      },
+      "image/png",
+      0.95
+    );
   } catch (error) {
-    console.error('生成分享图失败:', error)
+    console.error("生成分享图失败:", error);
   }
 }
